@@ -1,0 +1,789 @@
+<html>
+<script src='https://d3js.org/d3.v5.min.js'></script>
+
+<style>
+    body {
+        background-color: #404040
+    }
+    
+    circle {
+        stroke: black;
+    }
+    
+    rect {
+        stroke: white;
+        stroke-opacity: 0.8;
+    }
+    
+    rect:hover {
+        fill: orange;
+    }
+    
+    :root {
+        --accent-color: #E8336D;
+    }
+    
+    svg {
+        font-family: 'Lato';
+        width: 100%;
+        height: 100%;
+        opacity: 1;
+        background-repeat: no-repeat;
+        background-size: 1200px 800px;
+        background-image: url("4_3.jpg");
+    }
+    
+    path.line {
+        fill: none;
+        stroke: lightgrey;
+        stroke-width: 1px;
+    }
+    
+    .hidden {
+        display: none;
+    }
+    
+    .axis path,
+    .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+    }
+    
+    .dot {
+        stroke: none;
+    }
+    
+    .tooltip {
+        position: absolute;
+        font-size: 12px;
+        width: auto;
+        height: auto;
+        pointer-events: none;
+        background-color: white;
+    }
+    
+    #btnCity {
+        position: absolute;
+        transition: .5s ease;
+        top: 382px;
+        left: 1010px;
+        padding: 10px 20px 10px 20px;
+        text-align: center;
+        border-radius: 6px;
+        border-width: thick;
+        font-weight: bold;
+        font-family: Lato;
+    }
+    
+    #btnHwy {
+        position: absolute;
+        transition: .5s ease;
+        top: 435px;
+        left: 1010px;
+        padding: 10px 7px 10px 7px;
+        text-align: center;
+        border-radius: 6px;
+        border-width: thick;
+        font-weight: bold;
+        font-family: Lato;
+    }
+    
+    #btnLabel {
+        position: absolute;
+        transition: .5s ease;
+        top: 330px;
+        left: 990px;
+        color: red; //#f44336;
+        font-weight: bold;
+        text-decoration: underline;
+    }
+    
+    button:focus {
+        outline: 0;
+        color: white;
+    }
+    
+    #annot1 {
+        position: absolute;
+        transition: .5s ease;
+        top: 270px;
+        left: 505px;
+        color: darkorange;
+        /*        display: block;*/
+        display: block;
+        font-size: 14px;
+        text-decoration: underline;
+    }
+    
+    #aline1 {
+        transform: translateY(308px) translateX(-140px) rotate(-45deg);
+        width: 30px;
+        border-color: darkorange;
+        display: block;
+    }
+    
+    #annot2 {
+        position: absolute;
+        transition: .5s ease;
+        top: 300px;
+        left: 505px;
+        color: darkorange;
+        /*        display: block;*/
+        display: none;
+        font-size: 14px;
+        text-decoration: underline;
+    }
+    
+    #aline2 {
+        transform: translateY(335px) translateX(-140px) rotate(-45deg);
+        width: 30px;
+        border-color: darkorange;
+        display: none;
+    }
+    
+    #annot3 {
+        position: absolute;
+        transition: .5s ease;
+        top: 395px;
+        left: 845px;
+        color: darkorange;
+        /*        display: block;*/
+        display: block;
+        font-size: 14px;
+        text-decoration: underline;
+    }
+    
+    #aline3 {
+        transform: translateY(420px) translateX(200px) rotate(-45deg);
+        width: 30px;
+        border-color: darkorange;
+        display: block
+    }
+    
+    #aline4 {
+        transform: translateY(410px) translateX(230px) rotate(-45deg);
+        width: 30px;
+        border-color: darkorange;
+        display: block
+    }
+    
+    #annot4 {
+        position: absolute;
+        transition: .5s ease;
+        top: 385px;
+        left: 795px;
+        color: orange;
+        /*        display: block;*/
+        display: none;
+        font-size: 14px;
+        text-decoration: underline;
+    }
+    
+    #aline5 {
+        transform: translateY(413px) translateX(150px) rotate(-45deg);
+        width: 30px;
+        border-color: darkorange;
+        display: none
+    }
+    
+    #aline6 {
+        transform: translateY(403px) translateX(200px) rotate(-45deg);
+        width: 30px;
+        border-color: darkorange;
+        display: none
+    }
+    
+    a:link,
+    a:visited {
+        background-color: #f44336;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    a:hover,
+    a:active {
+        background-color: red;
+    }
+    
+    #linkDiv {
+        position: absolute;
+        transition: .5s ease;
+        top: 22px;
+        left: 20px;
+    }
+    
+    #linkDiv2 {
+        position: absolute;
+        transition: .5s ease;
+        top: 522px;
+        left: 1090px;
+    }
+    
+    #first {
+        fill: red;
+    }
+    
+    #chartLabel {
+        fill: red;
+        text-decoration: underline;
+    }
+    
+    #navInst {
+        fill: yellow;
+        text-decoration: underline;
+        font-weight: bold;
+    }
+    
+    #inst {
+        fill: yellow;
+    }
+
+</style>
+
+<body onload='init()' id="mainBody">
+    <div id="linkDiv">
+        <a href=main.html>Main Page</a>
+    </div>
+
+    <div id="btnDiv">
+        <button type="button" onclick="update(data,city=true)" style="border-style:inset" id="btnCity">
+            City MPG
+        </button>
+        <button type="button" onclick="update(data, city=false)" style="border-style:outset" id="btnHwy">
+            Highway MPG
+        </button>
+        <p id="btnLabel">Choose MPG to Plot:</p>
+    </div>
+
+    <div id="annot">
+        <hr id="aline1">
+        <p id="annot1">Max Avg MPG: 150</p>
+
+        <hr id="aline2">
+        <p id="annot2">Max Avg MPG: 122</p>
+
+        <hr id="aline3">
+        <hr id="aline4">
+        <p id="annot3">Max Avg MPG: 27</p>
+
+        <hr id="aline5">
+        <hr id="aline6">
+        <p id="annot4">Max Avg MPG: 34</p>
+    </div>
+
+    <div id="mainDiv">
+        <svg width=1200 height=570 id="main">
+            <text x="270" y="40" font-family="Lato" font-size="20px" fill="black" text-decoration="underline" font-weight="bold" id="header" style="fill:red">
+                Comparison of Fuel Efficiency Between Electric Cars and 4 Cylinder Gas Engines
+            </text>
+            <text x="200" y="70" font-family="Lato" font-size="16px" id="header" style="fill:whitesmoke">
+                <tspan dy="1.2em" x="130">
+                    Electric cars are gaining popularity in this day and age. The fuel efficiency of electric cars is worth comparing to the standard 4-cylinder engine cars.
+                </tspan>
+                <tspan dy="1.7em" x="130">
+                    The bar charts below depict the average MPG of electric and 4-cylinder engine cars of the same make. As seen from the charts, the avg MPG for electric cars is
+                </tspan>
+                <tspan dy="1.2em" x=130>
+                    much higher than that of the standard 4-cylinder engines. In particular, it is worth noting:
+                </tspan>
+                <tspan dy="1.4em" x=130>
+                    1) Electric Cars Max Avg City MPG = 150 vs 4-Cylinder Cars Max Avg City MPG = 27
+                </tspan>
+                <tspan dy="1.4em" x=130>
+                    2) Electric Cars Max Avg Highway MPG = 122 vs 4-Cylinder Cars Max Avg City MPG = 34
+                </tspan>
+
+                <tspan id="chartLabel" dy="1.4em" x="400" y="205" font-size="15px" text-decoration="underline" font-weight=bold>
+                    Electric Cars Fuel Efficiency
+                </tspan>
+                <tspan id="chartLabel" dy="1.4em" x="730" y="205" font-size="15px" text-decoration="underline" font-weight=bold>
+                    Gasoline Cars Fuel Efficiency
+                </tspan>
+
+                <tspan id="navInst" dy="1.8em" x=100 y=240>
+                    Navigation Instructions:
+                </tspan>
+
+                <tspan id="inst" dy="1.8em" x=100 y=270>
+                    - Use the buttons to plot data
+                </tspan>
+                <tspan id="inst" dy="1.8em" x=100 y=290>
+                    for different MPG types.
+                </tspan>
+                <tspan id="inst" dy="2.0em" x=100 y=310>
+                    - Hover over the bars for
+                </tspan>
+                <tspan id="inst" dy="2.0em" x=100 y=330>
+                    more info.
+                </tspan>
+            </text>
+        </svg>
+    </div>
+    <script>
+        var idx = 0
+        var data, data0, data1;
+
+        async function init() {
+            data = await d3.csv('https://flunky.github.io/cars2017.csv');
+            mainFunc(data)
+        }
+
+        function mainFunc(data) {
+            data0 = []
+            chooseData(data, data0, numCylinders = 0)
+            plotRect(data0, fill = "steelblue")
+
+            data1 = []
+            chooseData2(data, data0, data1, numCylinders = 4)
+            plotRect2(data1, fill = "forestgreen")
+            d3.select("#btnCity").style("color", "white")
+        }
+
+        function chooseData(data, chosen, numCylinders) {
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].EngineCylinders == numCylinders) {
+                    chosen.push(data[i]);
+                }
+            }
+        }
+
+        function chooseData2(data, data0, chosen, numCylinders) {
+            console.log(data0)
+            for (var j = 0; j < data0.length; j++) {
+                for (var i = 0; i < data.length; i++) {
+
+                    var found = false;
+                    for (var k = 0; k < chosen.length; k++) {
+                        if (chosen[k].Make == data[i].Make) {
+                            found = true;
+                        }
+                    }
+
+                    if (!found && data0[j].Make == data[i].Make &&
+                        data[i].Fuel == "Gasoline" &&
+                        data[i].EngineCylinders == numCylinders) {
+                        chosen.push(data[i]);
+                    }
+                }
+            }
+        }
+
+        function plotRect(data, fill = "steelblue") {
+            xdomain = [0, 1];
+            xrange = [0, 200];
+            ydomain = [250, 0];
+            yrange = [250, 0];
+            xs = d3.scaleLinear().domain(xdomain).range(xrange);
+            ys = d3.scaleLinear().domain(ydomain).range(yrange);
+            createToolTip(fill)
+            var chart = d3.select("svg")
+                .append("g")
+                .attr("transform", "translate(360, 40)")
+                .selectAll("rect").data(data)
+                .enter().append("rect")
+                .style("fill", fill)
+                .on("mouseover", tipMouseover)
+                .on("mouseout", tipMouseout)
+                .attr("id", "first")
+                .attr("x", 0)
+                .attr("y", function(d) {
+                    return ys(250)
+                })
+                .attr("x", function(d, i) {
+                    return i * 25
+                })
+                .attr("y", function(d) {
+                    return ys(400 - d.AverageCityMPG)
+                })
+                .attr("height", function(d, i) {
+                    return d.AverageCityMPG
+                })
+                .transition().duration(1000)
+                .attr("width", 20);
+
+            drawYAxis()
+            drawXAxis()
+            labelAxis1()
+        }
+
+        function plotRect2(data, fill = "forestgreen") {
+            xdomain = [0, 1];
+            xrange = [0, 200];
+            ydomain = [250, 0];
+            yrange = [250, 0];
+            xs = d3.scaleLinear().domain(xdomain).range(xrange);
+            ys = d3.scaleLinear().domain(ydomain).range(yrange);
+            createToolTip(fill)
+            var chart = d3.select("svg")
+                .append("g")
+                .attr("transform", "translate(700,40)")
+                .selectAll("rect").data(data)
+                .enter().append("rect")
+                .on("mouseover", tipMouseover)
+                .on("mouseout", tipMouseout)
+                .attr("x", 0)
+                .attr("y", function(d) {
+                    return ys(250)
+                })
+                .attr("x", function(d, i) {
+                    return i * 25
+                })
+                .attr("y", function(d) {
+                    return ys(400 - d.AverageCityMPG)
+                })
+                .attr("height", function(d, i) {
+                    return d.AverageCityMPG
+                })
+                .transition().duration(1000)
+                .attr("width", 20)
+                .style("fill", fill);
+
+            drawYAxis2()
+            drawXAxis2()
+        }
+
+        function hideAnnotation1() {
+            document.getElementById("annot1").style.display = "none"
+            document.getElementById("aline1").style.display = "none"
+
+            document.getElementById("annot3").style.display = "none"
+            document.getElementById("aline3").style.display = "none"
+            document.getElementById("aline4").style.display = "none"
+        }
+
+        function showAnnotation1() {
+            document.getElementById("annot1").style.display = "block"
+            document.getElementById("aline1").style.display = "block"
+
+            document.getElementById("annot3").style.display = "block"
+            document.getElementById("aline3").style.display = "block"
+            document.getElementById("aline4").style.display = "block"
+        }
+
+        function hideAnnotation2() {
+            document.getElementById("annot2").style.display = "none"
+            document.getElementById("aline2").style.display = "none"
+
+            document.getElementById("annot4").style.display = "none"
+            document.getElementById("aline5").style.display = "none"
+            document.getElementById("aline6").style.display = "none"
+        }
+
+        function showAnnotation2() {
+            document.getElementById("annot2").style.display = "block"
+            document.getElementById("aline2").style.display = "block"
+
+            document.getElementById("annot4").style.display = "block"
+            document.getElementById("aline5").style.display = "block"
+            document.getElementById("aline6").style.display = "block"
+        }
+
+        function update(data, city = true) {
+            var u = d3.select("svg").selectAll("rect")
+            var bCity = d3.select("#btnCity")
+            var bHwy = d3.select("#btnHwy")
+
+            u.attr("y", function(d) {
+                    return ys(250)
+                })
+                .attr("width", 0)
+
+            if (city) {
+                d3.select("#btnCity").style("color", "white")
+                d3.select("#btnHwy").style("color", "black")
+                hideAnnotation2()
+                showAnnotation1()
+                u.attr("y", function(d) {
+                        return ys(400 - d.AverageCityMPG)
+                    })
+                    .attr("height", function(d, i) {
+                        return d.AverageCityMPG
+                    })
+                    .transition().duration(1000)
+                    .attr("width", 20)
+                bCity.style("border-style", "inset")
+                bHwy.style("border-style", "outset")
+
+            } else {
+                d3.select("#btnCity").style("color", "black")
+                d3.select("#btnHwy").style("color", "white")
+                hideAnnotation1()
+                showAnnotation2()
+                u.attr("y", function(d) {
+                        return ys(400 - d.AverageHighwayMPG)
+                    })
+                    .attr("height", function(d, i) {
+                        return d.AverageHighwayMPG
+                    })
+                    .transition().duration(1000)
+                    .attr("width", 20)
+                bCity.style("border-style", "outset")
+                bHwy.style("border-style", "inset")
+            }
+        }
+
+        var tooltip;
+        var tipMouseover;
+        var tipMouseout;
+
+        function createToolTip(fill = "steelblue") {
+
+            console.log(fill)
+            tooltip = d3.select("#mainDiv").append("div")
+                .attr("class", "tooltip")
+                .style("opacity", 0)
+                .style("background", "whitesmoke")
+                .style("border-radius", "6px")
+                .style("font", "12px sans-serif")
+                .style("padding", "2px");
+
+            // Tooltip mouseover event handler
+            tipMouseover = function(d) {
+                var html =
+                    "<p><b>Make:</b> " + d.Make +
+                    "<br><b>Fuel:</b> " + d.Fuel +
+                    "<br><b>Cylinders:</b> " + d.EngineCylinders +
+                    "<br><b>Avg City MPG:</b> " + d.AverageCityMPG +
+                    "<br><b>Avg Hwy MPG:</b> " + d.AverageHighwayMPG +
+                    "</p>";
+
+                tooltip.html(html)
+                    .style("left", (d3.event.pageX + 15) + "px")
+                    .style("top", (d3.event.pageY - 28) + "px")
+                    .attr("font-size", "8px")
+                    .transition()
+                    .duration(500) // ms
+                    .style("opacity", 0.8) // started as 0!
+
+                d3.select(this).style("fill", "red")
+            };
+
+            // tooltip mouseout event handler
+            tipMouseout = function(d) {
+                tooltip.transition()
+                    .duration(300) // ms
+                    .style("opacity", 0); // don't care about position!
+                d3.select(this).style("fill", fill);
+            };
+
+        }
+
+        function drawYAxis() {
+            var g1 = d3.select("svg").append("g")
+            g1.attr("transform", "translate(360,240)")
+                .attr("fill", "none")
+                .attr("font-size", 10)
+                .attr("font-family", "sans-serif")
+                .attr("text-anchor", "end")
+
+            g1.append("path")
+                .attr("class", "domain")
+                .attr("stroke", "white")
+                .attr("d", "M-6,200.5H0V0.5H-6")
+
+            var id;
+            var maxVal = 0;
+            for (id = 0; id < data0.length; id++) {
+                var mpg = parseInt(data0[id].AverageCityMPG)
+
+                console.log(mpg, maxVal)
+                console.log(mpg > maxVal)
+                if (mpg > maxVal) {
+                    maxVal = mpg
+                }
+            }
+            yAxis = [0, 50, 100, maxVal, maxVal + 50]
+            var g1sub1 = 0;
+
+            function appendToG1(val, i) {
+                g1sub1 = g1.append("g")
+                g1sub1
+                    .attr("class", "tick")
+                    .attr("opacity", "1")
+                    .attr("transform", "translate(0," + val + ")")
+                    .append("line")
+                    .attr("stroke", "white")
+                    .attr("x2", "-6")
+
+                g1sub1
+                    .append("text")
+                    .attr("fill", "white")
+                    .attr("x", "-9")
+                    .attr("dy", "0.32em")
+                    .text(yAxis[i])
+
+            }
+
+            var i;
+            var val = 250;
+            for (i = 0; i < yAxis.length; i++) {
+                val = val - 50
+                appendToG1(val.toString(), i)
+            }
+        }
+
+        function drawXAxis() {
+            var g2 = d3.select("svg").append("g")
+            g2.attr("transform", "translate(360,440)")
+                .attr("fill", "none")
+                .attr("font-size", 10)
+                .attr("font-family", "sans-serif")
+                .attr("text-anchor", "middle")
+
+            g2.append("path")
+                .attr("class", "domain")
+                .attr("stroke", "white")
+                .attr("d", "M0.5,6V0.5H250.5V6")
+
+            function appendToG2(val, i) {
+                g2sub1 = g2.append("g")
+                g2sub1
+                    .attr("class", "tick")
+                    .attr("opacity", "1")
+                    .attr("transform", "translate(" + val + ",0)")
+                    .append("line")
+                    .attr("stroke", "white")
+                    .attr("y2", "6")
+                g2sub1
+                    .append("text")
+                    .attr("rotate", -90)
+                    .attr("letter-spacing", 4)
+                    .attr("style", "writing-mode: tb; glyph-orientation-vertical: 0")
+                    .attr("fill", "white")
+                    .attr("y", "68")
+                    .attr("dy", "0.71em")
+                    .text(data0[i].Make)
+            }
+
+            var i;
+            var val = -15;
+            for (i = 0; i < data0.length; i++) {
+                val = val + 25
+                appendToG2(val.toString(), i)
+            }
+        }
+
+        function drawYAxis2() {
+            var g1 = d3.select("svg").append("g")
+            g1.attr("transform", "translate(700,240)")
+                .attr("fill", "none")
+                .attr("font-size", 10)
+                .attr("font-family", "sans-serif")
+                .attr("text-anchor", "end")
+
+            g1.append("path")
+                .attr("class", "domain")
+                .attr("stroke", "white")
+                .attr("d", "M-6,200.5H0V0.5H-6")
+
+            var id;
+            var maxVal = 0;
+            for (id = 0; id < data0.length; id++) {
+                var mpg = parseInt(data0[id].AverageCityMPG)
+
+                console.log(mpg, maxVal)
+                console.log(mpg > maxVal)
+                if (mpg > maxVal) {
+                    maxVal = mpg
+                }
+            }
+            yAxis = [0, 50, 100, maxVal, maxVal + 50]
+            var g1sub1 = 0;
+
+            function appendToG1(val, i) {
+                g1sub1 = g1.append("g")
+                g1sub1
+                    .attr("class", "tick")
+                    .attr("opacity", "1")
+                    .attr("transform", "translate(0," + val + ")")
+                    .append("line")
+                    .attr("stroke", "white")
+                    .attr("x2", "-6")
+
+                g1sub1
+                    .append("text")
+                    .attr("fill", "white")
+                    .attr("x", "-9")
+                    .attr("dy", "0.32em")
+                    .text(yAxis[i])
+
+            }
+
+            var i;
+            var val = 250;
+            for (i = 0; i < yAxis.length; i++) {
+                val = val - 50
+                appendToG1(val.toString(), i)
+            }
+        }
+
+        function drawXAxis2() {
+            var g2 = d3.select("svg").append("g")
+            g2.attr("transform", "translate(700,440)")
+                .attr("fill", "none")
+                .attr("font-size", 10)
+                .attr("font-family", "sans-serif")
+                .attr("text-anchor", "middle")
+
+            g2.append("path")
+                .attr("class", "domain")
+                .attr("stroke", "white")
+                .attr("d", "M0.5,6V0.5H250.5V6")
+
+            function appendToG2(val, i) {
+                g2sub1 = g2.append("g")
+                g2sub1
+                    .attr("class", "tick")
+                    .attr("opacity", "1")
+                    .attr("transform", "translate(" + val + ",0)")
+                    .append("line")
+                    .attr("stroke", "white")
+                    .attr("y2", "6")
+                g2sub1
+                    .append("text")
+                    .attr("rotate", -90)
+                    .attr("letter-spacing", 4)
+                    .attr("style", "writing-mode: tb; glyph-orientation-vertical: 0")
+                    .attr("fill", "white")
+                    .attr("y", "68")
+                    .attr("dy", "0.71em")
+                    .text(data1[i].Make)
+            }
+
+            var i;
+            var val = -15;
+            for (i = 0; i < data1.length; i++) {
+                val = val + 25
+                appendToG2(val.toString(), i)
+            }
+        }
+
+        function labelAxis1() {
+            d3.select("svg").append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 310)
+                .attr("x", -340)
+                .attr("dy", "1em")
+                .attr("font-size", "12px")
+                .style("text-anchor", "middle")
+                .style("fill", "white")
+                .text("Average MPG");
+            d3.select("svg").append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 650)
+                .attr("x", -340)
+                .attr("dy", "1em")
+                .attr("font-size", "12px")
+                .style("text-anchor", "middle")
+                .style("fill", "white")
+                .text("Average MPG");
+        }
+
+    </script>
+</body>
+
+</html>

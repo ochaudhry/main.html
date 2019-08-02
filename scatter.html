@@ -1,0 +1,599 @@
+<html>
+<script src='https://d3js.org/d3.v5.min.js'></script>
+<script src="https://rawgit.com/susielu/d3-annotation/master/d3-annotation.min.js"></script>
+
+<style>
+    body {
+        background-color: #404040
+    }
+    
+    circle {
+        stroke: white;
+        stroke-opacity: 0.6;
+    }
+    
+    :root {
+        --accent-color: #E8336D;
+    }
+    
+    svg {
+        font-family: 'Lato';
+        opacity: 1;
+        background-repeat: no-repeat;
+        background-size: 1200px 800px;
+        background-image: url("4_3.jpg");
+    }
+    
+    .axis path,
+    .axis line {
+        fill: white;
+        stroke: #000;
+        shape-rendering: crispEdges;
+    }
+    
+    .dot {
+        stroke: none;
+    }
+    
+    .tooltip {
+        position: absolute;
+        font-size: 12px;
+        width: auto;
+        height: auto;
+        pointer-events: none;
+        background-color: white;
+    }
+    
+    a:link,
+    a:visited {
+        background-color: #f44336; // #f44336;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    a:hover,
+    a:active {
+        background-color: red;
+    }
+    
+    #linkDiv {
+        position: absolute;
+        transition: .5s ease;
+        top: 22px;
+        left: 20px;
+    }
+    
+    #btn0 {
+        position: absolute;
+        transition: .5s ease;
+        top: 397px;
+        left: 880px;
+        padding: 0px 17px 0px 17px;
+        text-align: center;
+        color: steelblue;
+        font-weight: bold;
+    }
+    
+    #btn0Label {
+        position: absolute;
+        transition: .5s ease;
+        top: 397px;
+        left: 905px;
+        color: steelblue;
+        font-weight: bold;
+    }
+    
+    #btn4 {
+        position: absolute;
+        transition: .5s ease;
+        top: 425px;
+        left: 880px;
+        text-align: center;
+        color: darkgreen;
+        font-weight: bold;
+    }
+    
+    #btn4Label {
+        position: absolute;
+        transition: .5s ease;
+        top: 425px;
+        left: 905px;
+        color: darkgreen;
+        font-weight: bold;
+    }
+    
+    #btn8 {
+        position: absolute;
+        transition: .5s ease;
+        top: 453px;
+        left: 880px;
+        text-align: center;
+        color: darkorchid;
+        font-weight: bold;
+    }
+    
+    #btn8Label {
+        position: absolute;
+        transition: .5s ease;
+        top: 453px;
+        left: 905px;
+        color: darkorchid;
+        font-weight: bold;
+    }
+    
+    #btnLabel {
+        position: absolute;
+        transition: .5s ease;
+        top: 352px;
+        left: 870px;
+        color: red; //#f44336; //crimson;
+        font-weight: bold;
+        text-decoration: underline;
+    }
+    
+    label {
+        vertical-align: top;
+    }
+    
+    #annotS1 {
+        position: absolute;
+        transition: .5s ease;
+        top: 420px;
+        left: 350px;
+        color: crimson;
+        /*        display: block;*/
+        display: block;
+        font-size: 14px;
+        text-decoration: underline;
+    }
+    
+    #alineS1 {
+        transform: translateY(372px) translateX(12px) rotate(-37deg);
+        width: 385px;
+        border-color: lightyellow;
+        display: block;
+        opacity: 0.7;
+    }
+    
+    #annot1 {
+        position: absolute;
+        transition: .5s ease;
+        top: 370px;
+        left: 682px;
+        color: darkorange;
+        /*        display: block;*/
+        display: block;
+        font-size: 14px;
+        text-decoration: underline;
+    }
+    
+    #aline1 {
+        transform: translateY(365px) translateX(38px) rotate(45deg);
+        width: 30px;
+        border-color: darkorange;
+        display: block
+    }
+    
+    #annot2 {
+        position: absolute;
+        transition: .5s ease;
+        top: 455px;
+        left: 668px;
+        color: crimson;
+        display: block;
+        font-size: 14px;
+        text-decoration: underline;
+    }
+    
+    #aline2 {
+        transform: translateY(435px) translateX(-7px) rotate(180deg);
+        width: 45px;
+        border-color: crimson;
+        display: block;
+    }
+    
+    #aline3 {
+        transform: translateY(283px) translateX(157px) rotate(180deg);
+        width: 275 px;
+        border-color: crimson;
+        display: block;
+    }
+    
+    #aline4 {
+        transform: translateY(423px) translateX(23px) rotate(45deg);
+        width: 20px;
+        border-color: crimson;
+        display: block;
+    }
+    
+    #ts1 {
+        fill: red;
+        text-decoration: underline;
+    }
+    
+    #navInst {
+        fill: yellow;
+        text-decoration: underline;
+        font-weight: bold;
+    }
+    
+    #inst {
+        fill: yellow;
+    }
+
+</style>
+
+<body onload='init()' id="mainBody">
+    <div id="linkDiv">
+        <a href=main.html>Main Page</a>
+    </div>
+    <div id="annot">
+        <hr id="alineS1">
+        <p id="annotS1"></p>
+    </div>
+
+    <div id="anno2">
+        <hr id="aline1">
+        <p id="annot1">Positive Correlation Line</p>
+    </div>
+
+    <!--
+<div>
+    <hr id="aline2">
+    <p id="annot2">Performance Difference</p>
+    <hr id="aline3">
+    <hr id="aline4">
+</div>
+-->
+
+    <!--
+<div>
+
+
+    <hr id="aline3">
+
+</div>
+-->
+
+    <div id="userSelection">
+        <div id="btnDiv">
+            <p id="btnLabel">Choose Engine Type to Plot:</p>
+        </div>
+
+        <div>
+            <input type="checkbox" checked id="btn0" onclick="update(data0, data1, data2)">
+            <label id="btn0Label" for="btn0">Electric (0 Cylinders)</label>
+        </div>
+
+        <div>
+            <input type="checkbox" checked id="btn4" onclick="update(data0, data1, data2)">
+            <label id="btn4Label" for="btn4">4-Cylinder</label>
+        </div>
+
+        <div>
+            <input type="checkbox" unchecked id="btn8" onclick="update(data0, data1, data2)">
+            <label id="btn8Label" for="btn8">8-Cylinder</label>
+        </div>
+    </div>
+
+    <div id="mainDiv">
+        <svg width=1250 height=590 id="main">
+            <text x="300" y="40" font-family="Lato" font-size="20px" fill="black" text-decoration="underline" font-weight="bold" id="header" style="fill:red">
+                Correlation between City and Highway MPG for Different Engine Types
+            </text>
+            <text x="200" y="70" font-family="Lato" font-size="16px" id="header" style="fill:whitesmoke">
+                <tspan dy="1.2em" x="130">
+                    Let's look at how highway and city MPG for electric, 4-cylinder, and 8-cylinder are related to each other.
+                </tspan>
+                <tspan dy="1.7em" x="130">
+                    The scatter plot below shows data for electric and 4-cylinder engines. It is highlighted that:
+                </tspan>
+                <tspan dy="1.6em" x=130>
+                    1) There is a positive correlation between the highway and city MPG for all the car types as shown by the positive correlation line.
+                </tspan>
+                <tspan dy="1.6em" x=130>
+                    2) The performance difference between electric and gas engines is clearly visible by looking at the distance between the cluster of data points for the electric cars
+                </tspan>
+                <tspan dy="1.6em" x=130>
+                    and those of the other engine types.
+                </tspan>
+
+                <tspan id="navInst" dy="1.8em" x=130 y=240>
+                    Navigation Instructions:
+                </tspan>
+
+                <tspan id="inst" dy="1.8em" x=130 y=270>
+                    - Use the check boxes to plot
+                </tspan>
+                <tspan id="inst" dy="1.8em" x=130 y=290>
+                    data for different sized engines.
+                </tspan>
+                <tspan id="inst" dy="2.0em" x=130 y=310>
+                    - Hover over the data points for
+                </tspan>
+
+                <tspan id="inst" dy="2.0em" x=130 y=330>
+                    more info.
+                </tspan>
+                <!--
+<tspan dy="1.8em" x=830 y=200>
+    car types for exploration. It also includes an additional car type which is 8-cylinder.
+</tspan>
+<tspan dy="1.8em" x=130>
+    Hovering over the data points in the scatter plot reveal more info for each data point.
+</tspan>
+-->
+                <tspan dy="1.4em" x=130>
+
+                </tspan>
+                <tspan dy="1.4em" x=130>
+
+                </tspan>
+                <tspan id='ts1' dy="1.2em" x="545" y="190" font-size="16px" text-decoration="underline" font-weight=bold>
+                    Fuel Efficiency Scatter Plot
+                </tspan>
+            </text>
+        </svg>
+    </div>
+    <script>
+        var data0;
+        var data1;
+        var data2;
+        async function init() {
+            const data = await d3.csv('https://flunky.github.io/cars2017.csv');
+
+            data0 = []
+            chooseData(data, data0, numCylinders = 0)
+
+            data1 = []
+            chooseData(data, data1, numCylinders = 4)
+
+            data2 = []
+            chooseData(data, data2, numCylinders = 8)
+
+            plot(data0, fill = "steelblue")
+
+            plot(data1, fill = "darkgreen")
+
+            //            plot(data2, xrange = [400, 600], yrange = [500, 300],
+            //                xAxis_x = 480, xAxis_y = 350, yAxis_x = 480, yAxis_y = 550,
+            //                xScale1 = 10, yScale1 = 40, xScale2 = 10, yScale2 = 40, fill = "darkorchid")
+            plotAxes()
+        }
+
+        function update(data0, data1, data2) {
+            var u = d3.select("svg").selectAll("circle").attr("r", 0)
+
+            var b0 = document.getElementById("btn0")
+            var b1 = document.getElementById("btn4")
+            var b2 = document.getElementById("btn8")
+
+            if (b0.checked) {
+                plot(data0, fill = "steelblue")
+                    //                hideAnnotation2()
+                    //                showAnnotation1()
+            }
+            if (b1.checked) {
+                plot(data1, fill = "darkgreen")
+                    //                hideAnnotation2()
+                    //                showAnnotation1()
+            }
+            if (b2.checked) {
+                plot(data2, fill = "darkorchid")
+                    //                hideAnnotation2()
+                    //                showAnnotation1()
+            }
+
+            if (b0.checked && b1.checked) {
+                showAnnotation1()
+            } else {
+                hideAnnotation1()
+            }
+        }
+
+        function chooseData(data, chosen, numCylinders) {
+            var i;
+            for (i = 0; i < data.length; i++) {
+                if (data[i].EngineCylinders == numCylinders) {
+                    chosen.push(data[i]);
+                }
+            }
+        }
+
+        function plot(data, fill = "lightblue", xrange = [600, 900], yrange = [750, 450], xAxis_x = 480, xAxis_y = 350, yAxis_x = 480, yAxis_y = 550, xScale1 = 10, yScale1 = 40, xScale2 = 10, yScale2 = 40) {
+
+            var x = d3.scaleLog()
+                .domain([10, 150])
+                .range(xrange);
+
+            var y = d3.scaleLog()
+                .domain([10, 150])
+                .range(yrange);
+
+            var tooltip = d3.select("#mainDiv").append("div")
+                .attr("class", "tooltip")
+                .style("opacity", 0)
+                .style("background", "whitesmoke")
+                .style("border-radius", "6px")
+                .style("font", "12px sans-serif")
+                .style("padding", "2px");
+
+            // tooltip mouseover event handler
+            var tipMouseover = function(d) {
+                var html =
+                    "<p><b>Make:</b> " + d.Make +
+                    "<br><b>Fuel:</b> " + d.Fuel +
+                    "<br><b>Cylinders:</b> " + d.EngineCylinders +
+                    "<br><b>Avg City MPG:</b> " + d.AverageCityMPG +
+                    "<br><b>Avg Highway MPG:</b> " + d.AverageHighwayMPG +
+                    "</p>";
+
+                tooltip.html(html)
+                    .style("left", (d3.event.pageX + 15) + "px")
+                    .style("top", (d3.event.pageY - 28) + "px")
+                    .attr("font-size", "8px")
+                    .transition()
+                    .duration(200) // ms
+                    .style("opacity", 0.9) // started as 0!
+
+                d3.select(this).style("fill", "red")
+            };
+            // tooltip mouseout event handler
+            var tipMouseout = function(d) {
+                tooltip.transition()
+                    .duration(300) // ms
+                    .style("opacity", 0); // don't care about position!
+
+                d3.select(this).style("fill", fill);
+            };
+
+            var abc = d3.select("svg")
+                .append("g")
+                .attr("transform", "translate(-120,-230)")
+                .selectAll("circle").data(data)
+                .enter().append("circle")
+                .on("mouseover", tipMouseover)
+                .on("mouseout", tipMouseout)
+                .attr("r", 0)
+                .attr("cx", function(d, i) {
+                    return x(d.AverageCityMPG)
+                })
+                .attr("cy", function(d, i) {
+                    return y(d.AverageHighwayMPG)
+                })
+                .transition().duration(1000)
+                .attr("r", function(d, i) {
+                    return parseInt(d.EngineCylinders) + 4
+                })
+                .attr("fill", fill)
+                .attr("id", "cir");
+        }
+
+        function hideAnnotation1() {
+            document.getElementById("annot2").style.display = "none"
+            document.getElementById("aline2").style.display = "none"
+            document.getElementById("aline3").style.display = "none"
+            document.getElementById("aline4").style.display = "none"
+        }
+
+        function showAnnotation1() {
+            document.getElementById("annot2").style.display = "block"
+            document.getElementById("aline2").style.display = "block"
+            document.getElementById("aline3").style.display = "block"
+            document.getElementById("aline4").style.display = "block"
+        }
+
+        function plotAxes(xAxis_x = 480, xAxis_y = 220, yAxis_x = 480, yAxis_y = 520,
+            xScale1 = 10, yScale1 = 40, xScale2 = 10, yScale2 = 40) {
+            var g1 = d3.select("svg").append("g")
+            g1.attr("transform", "translate(" + xAxis_x + "," + xAxis_y + ")")
+                //            g1.attr("transform", "translate(50,50)")
+                .attr("fill", "none")
+                .attr("font-size", 10)
+                .attr("font-family", "sans-serif")
+                .attr("text-anchor", "end")
+
+            g1.append("path")
+                .attr("class", "domain")
+                .attr("stroke", "white")
+                .attr("d", "M-6,300.5H0.5V0.5H-6")
+
+            xAxis = [10, 20, 50, 100]
+            yAxis = [10, 20, 50, 100]
+            var g1sub1 = 0;
+
+            function appendToG1(val, i) {
+                g1sub1 = g1.append("g")
+                g1sub1
+                    .attr("class", "tick")
+                    .attr("opacity", "1")
+                    .attr("transform", "translate(0," + val + ")")
+                    .append("line")
+                    .attr("stroke", "white")
+                    .attr("x2", "-6")
+
+                g1sub1
+                    .append("text")
+                    .attr("fill", "white")
+                    .attr("x", "-9")
+                    .attr("dy", "0.32em")
+                    .text(yAxis[i])
+            }
+
+            var i;
+            var vals = ['300.5', '223.962', '122.4552', '45.6678']
+            for (i = 0; i < vals.length; i++) {
+                appendToG1(vals[i], i)
+            }
+
+
+            var g2 = d3.select("svg").append("g")
+            g2.attr("transform", "translate(" + yAxis_x + "," + yAxis_y + ")")
+                //            .attr("transform", "translate(50,250)")
+                .attr("fill", "none")
+                .attr("font-size", 10)
+                .attr("font-family", "sans-serif")
+                .attr("text-anchor", "middle")
+
+            g2.append("path")
+                .attr("class", "domain")
+                .attr("stroke", "white")
+                .attr("d", "M0.5,6V0.5H300.5V6")
+
+
+            var g2sub1 = 0;
+
+            function appendToG2(val, i) {
+                g2sub1 = g2.append("g")
+                g2sub1
+                    .attr("class", "tick")
+                    .attr("opacity", "1")
+                    .attr("transform", "translate(" + val + ",0)")
+                    .append("line")
+                    .attr("stroke", "white")
+                    .attr("y2", "6")
+                g2sub1
+                    .append("text")
+                    .attr("fill", "white")
+                    .attr("y", "9")
+                    .attr("dy", "0.71em")
+                    .text(xAxis[i])
+            }
+
+            var i;
+            //            var vals2 = ['0.5', '51.6916', '119.363', '170.555']
+            var vals2 = ['0.75', '77.544', '179.0445', '255.8325']
+            for (i = 0; i < vals2.length; i++) {
+                appendToG2(vals2[i], i)
+            }
+
+            var labelX1 = xAxis_x + 150
+            var labelY1 = yAxis_y + 35
+            d3.select("svg").append("text")
+                .attr("transform", "translate(" + labelX1 + "," + labelY1 + ")")
+                .attr("font-size", "12px")
+                .style("text-anchor", "middle")
+                .style("fill", "white")
+                .text("Average City MPG (log)");
+
+            var labelX2 = xAxis_y + 150
+            var labelY2 = xAxis_x - 45
+            d3.select("svg").append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", labelY2)
+                .attr("x", -labelX2)
+                .attr("dy", "1em")
+                .attr("font-size", "12px")
+                .style("text-anchor", "middle")
+                .style("fill", "white")
+                .text("Average Highway MPG (log)");
+        }
+
+    </script>
+
+</body>
+
+</html>
